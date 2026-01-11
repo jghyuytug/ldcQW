@@ -72,6 +72,18 @@
 
 请参考 [`_workers_v2/README.md`](./_workers_v2/README.md) 使用 Wrangler 命令部署与配置。
 
+## 🔄 如何启用自动更新 (Auto Update)
+
+如果你 Fork 了本项目，可以通过启用 GitHub Actions 来实现每天自动同步上游最新代码（并触发 Vercel 重部署）：
+
+1.  进入你的 GitHub 仓库页面。
+2.  点击上方的 **Actions** 标签页。
+3.  在左侧栏找到 **Upstream Sync**。
+4.  点击 **Enable workflow** 按钮。
+5.  (可选) 点击 **Run workflow** 手动触发一次同步测试。
+
+启用后，脚本将每天定时检查 `chatgptuk/ldc-shop:main` 的更新并合并到你的仓库。
+
 ## 💡 建议：绑定自定义域名
 
 虽然本系统支持主动查询订单状态，但为了获得最佳的用户体验（即时的支付状态更新），我们仍然 **建议** 绑定一个自定义域名（如 `store.yourdomain.com`）。
