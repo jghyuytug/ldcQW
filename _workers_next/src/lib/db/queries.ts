@@ -1773,11 +1773,10 @@ export async function cancelExpiredOrders(filters: { productId?: string; userId?
 
         for (const expiredOrderId of orderIds) {
             try {
-                await db.run(sql`
-                    UPDATE cards
-                    SET reserved_order_id = NULL, reserved_at = NULL
-                    WHERE reserved_order_id = ${expiredOrderId} AND COALESCE(is_used, false) = false
-                `);
+                // Mirror manual cancel behavior to guarantee release
+                await db.update(cards)
+                    .set({ reservedOrderId: null, reservedAt: null })
+                    .where(eq(cards.reservedOrderId, expiredOrderId));
             } catch (error: any) {
                 if (!isMissingTableOrColumn(error)) throw error;
             }
