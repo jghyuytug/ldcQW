@@ -312,7 +312,7 @@
             "notifications": {
                 "title": "通知设置",
                 "featureTitle": "管理员实时通知",
-                "featureDesc": "配置后，以下事件将通过 Telegram 实时通知管理员：",
+                "featureDesc": "配置后，以下事件将通过 Telegram / Bark 实时通知管理员：",
                 "triggerPayment": "支付成功通知",
                 "triggerPaymentDesc": "当用户成功支付订单后，你将收到包含订单详情、商品信息、金额等内容的通知。",
                 "triggerRefund": "退款申请通知",
@@ -337,7 +337,23 @@
                 "step4Title": "测试连接",
                 "step4Desc": "保存设置后，点击「发送测试消息」按钮验证配置是否正确。如果收到消息，说明配置成功！",
                 "language": "通知语言",
-                "languageHint": "选择 Telegram 通知消息使用的语言"
+                "languageHint": "选择 Telegram 通知消息使用的语言",
+                "barkTitle": "Bark 通知",
+                "barkDesc": "配置 Bark 后，可在 iPhone 上接收管理员通知（默认官方服务 api.day.app）。",
+                "barkEnabled": "启用 Bark 通知",
+                "barkServerUrl": "Bark 服务地址",
+                "barkServerUrlHint": "不自建可直接使用 https://api.day.app",
+                "barkDeviceKey": "Bark Device Key",
+                "barkDeviceKeyHint": "在 Bark App 中复制你的 Device Key。",
+                "barkTest": "发送 Bark 测试",
+                "barkTestSuccess": "Bark 测试消息发送成功！",
+                "barkTestFailed": "Bark 测试消息发送失败：{{error}}",
+                "barkGuideStep1Title": "安装 Bark 并获取 Device Key",
+                "barkGuideStep1Desc": "在 iPhone 安装 Bark，打开后复制你的 Device Key。",
+                "barkGuideStep2Title": "填写配置并启用",
+                "barkGuideStep2Desc": "在上方开启 Bark，服务地址使用 https://api.day.app（默认），粘贴 Device Key 后保存。",
+                "barkGuideStep3Title": "发送测试消息",
+                "barkGuideStep3Desc": "点击“发送 Bark 测试”，如果手机收到推送说明配置成功。"
             },
             "email": {
                 "title": "邮件通知",

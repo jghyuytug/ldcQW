@@ -1,20 +1,23 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useI18n } from "@/lib/i18n/context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { saveNotificationSettings, testNotification, testEmailNotification } from "@/actions/admin"
-import { Bell, CreditCard, RotateCcw, ExternalLink, Mail } from "lucide-react"
+import { saveNotificationSettings, testBarkNotification, testEmailNotification, testNotification } from "@/actions/admin"
+import { Bell, CreditCard, RotateCcw, ExternalLink, Mail, Smartphone } from "lucide-react"
 
 interface NotificationsContentProps {
     settings: {
         telegramBotToken: string
         telegramChatId: string
         telegramLanguage: string
+        barkEnabled: boolean
+        barkServerUrl: string
+        barkDeviceKey: string
         resendApiKey: string
         resendFromEmail: string
         resendFromName: string
@@ -30,8 +33,15 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
     const [language, setLanguage] = useState(settings.telegramLanguage || 'zh')
     const [isLoading, setIsLoading] = useState(false)
     const [isTesting, setIsTesting] = useState(false)
+    const [isTestingBark, setIsTestingBark] = useState(false)
+
+    // Bark settings
+    const [barkEnabled, setBarkEnabled] = useState(settings.barkEnabled || false)
+    const [barkServerUrl, setBarkServerUrl] = useState(settings.barkServerUrl || 'https://api.day.app')
+    const [barkDeviceKey, setBarkDeviceKey] = useState(settings.barkDeviceKey || '')
 
     // Email settings
+    const [resendEnabled, setResendEnabled] = useState(settings.resendEnabled || false)
     const [resendApiKey, setResendApiKey] = useState(settings.resendApiKey || '')
     const [resendFromEmail, setResendFromEmail] = useState(settings.resendFromEmail || '')
     const [resendFromName, setResendFromName] = useState(settings.resendFromName || '')
@@ -86,6 +96,22 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
             toast.error(t('common.error'))
         } finally {
             setIsTestingEmail(false)
+        }
+    }
+
+    async function handleTestBark() {
+        setIsTestingBark(true)
+        try {
+            const res = await testBarkNotification()
+            if (res.success) {
+                toast.success(t('admin.settings.notifications.barkTestSuccess'))
+            } else {
+                toast.error(t('admin.settings.notifications.barkTestFailed', { error: res.error }))
+            }
+        } catch {
+            toast.error(t('common.error'))
+        } finally {
+            setIsTestingBark(false)
         }
     }
 
@@ -173,6 +199,13 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
                             </div>
                             <input type="hidden" name="telegramLanguage" value={language} />
                             <input type="hidden" name="emailLanguage" value={emailLanguage} />
+                            <input type="hidden" name="resendEnabled" value={resendEnabled ? 'true' : 'false'} />
+                            <input type="hidden" name="resendApiKey" value={resendApiKey} />
+                            <input type="hidden" name="resendFromEmail" value={resendFromEmail} />
+                            <input type="hidden" name="resendFromName" value={resendFromName} />
+                            <input type="hidden" name="barkEnabled" value={barkEnabled ? 'true' : 'false'} />
+                            <input type="hidden" name="barkServerUrl" value={barkServerUrl} />
+                            <input type="hidden" name="barkDeviceKey" value={barkDeviceKey} />
                             <p className="text-xs text-muted-foreground">{t('admin.settings.notifications.languageHint')}</p>
                         </div>
 
@@ -184,6 +217,77 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
                             {token && chatId && (
                                 <Button type="button" variant="secondary" onClick={handleTest} disabled={isTesting}>
                                     {isTesting ? t('common.processing') : t('admin.settings.notifications.test')}
+                                </Button>
+                            )}
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
+
+            {/* Bark 通知配置 */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Smartphone className="h-5 w-5" />
+                        {t('admin.settings.notifications.barkTitle')}
+                    </CardTitle>
+                    <CardDescription>{t('admin.settings.notifications.barkDesc')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form action={handleSave} className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="checkbox"
+                                id="barkEnabledCheckbox"
+                                checked={barkEnabled}
+                                onChange={(e) => setBarkEnabled(e.target.checked)}
+                                className="h-4 w-4 rounded border-gray-300"
+                            />
+                            <input type="hidden" name="barkEnabled" value={barkEnabled ? 'true' : 'false'} />
+                            <Label htmlFor="barkEnabledCheckbox">{t('admin.settings.notifications.barkEnabled')}</Label>
+                        </div>
+
+                        <div className="floating-field">
+                            <Input
+                                name="barkServerUrl"
+                                value={barkServerUrl}
+                                onChange={(e) => setBarkServerUrl(e.target.value)}
+                                placeholder=" "
+                            />
+                            <Label className="floating-label">{t('admin.settings.notifications.barkServerUrl')}</Label>
+                            <p className="text-xs text-muted-foreground">{t('admin.settings.notifications.barkServerUrlHint')}</p>
+                        </div>
+
+                        <div className="floating-field">
+                            <Input
+                                name="barkDeviceKey"
+                                value={barkDeviceKey}
+                                onChange={(e) => setBarkDeviceKey(e.target.value)}
+                                placeholder=" "
+                                type="password"
+                            />
+                            <Label className="floating-label">{t('admin.settings.notifications.barkDeviceKey')}</Label>
+                            <p className="text-xs text-muted-foreground">{t('admin.settings.notifications.barkDeviceKeyHint')}</p>
+                        </div>
+
+                        {/* Hidden fields for telegram settings */}
+                        <input type="hidden" name="telegramBotToken" value={token} />
+                        <input type="hidden" name="telegramChatId" value={chatId} />
+                        <input type="hidden" name="telegramLanguage" value={language} />
+                        {/* Hidden fields for email settings */}
+                        <input type="hidden" name="resendEnabled" value={resendEnabled ? 'true' : 'false'} />
+                        <input type="hidden" name="resendApiKey" value={resendApiKey} />
+                        <input type="hidden" name="resendFromEmail" value={resendFromEmail} />
+                        <input type="hidden" name="resendFromName" value={resendFromName} />
+                        <input type="hidden" name="emailLanguage" value={emailLanguage} />
+
+                        <div className="flex gap-4">
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading ? t('common.processing') : t('admin.settings.notifications.save')}
+                            </Button>
+                            {barkEnabled && barkDeviceKey && (
+                                <Button type="button" variant="secondary" onClick={handleTestBark} disabled={isTestingBark}>
+                                    {isTestingBark ? t('common.processing') : t('admin.settings.notifications.barkTest')}
                                 </Button>
                             )}
                         </div>
@@ -205,12 +309,12 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
                         <div className="flex items-center gap-3">
                             <input
                                 type="checkbox"
-                                name="resendEnabled"
-                                value="true"
                                 id="resendEnabledCheckbox"
-                                defaultChecked={settings.resendEnabled || false}
+                                checked={resendEnabled}
+                                onChange={(e) => setResendEnabled(e.target.checked)}
                                 className="h-4 w-4 rounded border-gray-300"
                             />
+                            <input type="hidden" name="resendEnabled" value={resendEnabled ? 'true' : 'false'} />
                             <Label htmlFor="resendEnabledCheckbox">{t('admin.settings.email.enabled')}</Label>
                         </div>
 
@@ -277,6 +381,10 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
                         <input type="hidden" name="telegramBotToken" value={token} />
                         <input type="hidden" name="telegramChatId" value={chatId} />
                         <input type="hidden" name="telegramLanguage" value={language} />
+                        {/* Hidden fields for bark settings */}
+                        <input type="hidden" name="barkEnabled" value={barkEnabled ? 'true' : 'false'} />
+                        <input type="hidden" name="barkServerUrl" value={barkServerUrl} />
+                        <input type="hidden" name="barkDeviceKey" value={barkDeviceKey} />
 
                         <div className="flex gap-4">
                             <Button type="submit" disabled={isLoading}>
@@ -353,6 +461,45 @@ export function NotificationsContent({ settings }: NotificationsContentProps) {
                                 <div>
                                     <p className="font-medium">{t('admin.settings.notifications.step4Title')}</p>
                                     <p className="text-sm text-muted-foreground">{t('admin.settings.notifications.step4Desc')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bark Guide */}
+                    <div className="border-t pt-4">
+                        <h3 className="flex items-center gap-2 font-semibold mb-3">
+                            <Smartphone className="h-4 w-4" />
+                            Bark
+                        </h3>
+                        <div className="space-y-3">
+                            <div className="flex gap-3">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-medium">1</span>
+                                <div>
+                                    <p className="font-medium">{t('admin.settings.notifications.barkGuideStep1Title')}</p>
+                                    <p className="text-sm text-muted-foreground">{t('admin.settings.notifications.barkGuideStep1Desc')}</p>
+                                    <a
+                                        href="https://github.com/Finb/Bark"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-1"
+                                    >
+                                        Finb/Bark <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-medium">2</span>
+                                <div>
+                                    <p className="font-medium">{t('admin.settings.notifications.barkGuideStep2Title')}</p>
+                                    <p className="text-sm text-muted-foreground">{t('admin.settings.notifications.barkGuideStep2Desc')}</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-medium">3</span>
+                                <div>
+                                    <p className="font-medium">{t('admin.settings.notifications.barkGuideStep3Title')}</p>
+                                    <p className="text-sm text-muted-foreground">{t('admin.settings.notifications.barkGuideStep3Desc')}</p>
                                 </div>
                             </div>
                         </div>

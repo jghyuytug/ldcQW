@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { products, cards, reviews, categories } from "@/lib/db/schema"
 import { eq, sql, inArray, and, or, isNull, lte } from "drizzle-orm"
-import { sendTelegramMessage } from "@/lib/notifications"
+import { sendBarkMessage, sendTelegramMessage } from "@/lib/notifications"
 import { revalidatePath, updateTag } from "next/cache"
 import { setSetting, getSetting, recalcProductAggregates, recalcProductAggregatesForMany, getProductForAdmin } from "@/lib/db/queries"
 import { isAdminUsername } from "@/lib/admin-auth"
@@ -667,6 +667,15 @@ export async function saveNotificationSettings(formData: FormData) {
     await setSetting('telegram_chat_id', chatId)
     await setSetting('telegram_language', language)
 
+    // Bark settings
+    const barkEnabled = formData.get('barkEnabled') === 'true'
+    const barkServerUrl = (formData.get('barkServerUrl') as string || '').trim()
+    const barkDeviceKey = (formData.get('barkDeviceKey') as string || '').trim()
+
+    await setSetting('bark_enabled', barkEnabled ? 'true' : 'false')
+    await setSetting('bark_server_url', barkServerUrl || 'https://api.day.app')
+    await setSetting('bark_device_key', barkDeviceKey)
+
     // Email settings
     const resendApiKey = (formData.get('resendApiKey') as string || '').trim()
     const resendFromEmail = (formData.get('resendFromEmail') as string || '').trim()
@@ -687,6 +696,13 @@ export async function saveNotificationSettings(formData: FormData) {
 export async function testNotification() {
     await checkAdmin()
     return await sendTelegramMessage("🔔 Test notification from LDC Shop")
+}
+
+export async function testBarkNotification() {
+    await checkAdmin()
+    return await sendBarkMessage("🔔 Test notification from LDC Shop", "This is a test message from LDC Shop", {
+        group: 'LDC Shop'
+    })
 }
 
 export async function testEmailNotification(to: string) {

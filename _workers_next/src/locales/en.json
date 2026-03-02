@@ -312,7 +312,7 @@
             "notifications": {
                 "title": "Notification Settings",
                 "featureTitle": "Real-time Admin Notifications",
-                "featureDesc": "Once configured, you will receive instant Telegram notifications for the following events:",
+                "featureDesc": "Once configured, you will receive instant Telegram / Bark notifications for the following events:",
                 "triggerPayment": "Payment Success",
                 "triggerPaymentDesc": "Get notified when a customer successfully completes a payment, including order details, product info, and amount.",
                 "triggerRefund": "Refund Request",
@@ -337,7 +337,23 @@
                 "step4Title": "Test the Connection",
                 "step4Desc": "After saving, click the 'Send Test Message' button to verify your configuration. If you receive a message, you're all set!",
                 "language": "Notification Language",
-                "languageHint": "Choose the language for Telegram notification messages"
+                "languageHint": "Choose the language for Telegram notification messages",
+                "barkTitle": "Bark Notifications",
+                "barkDesc": "Configure Bark to receive admin notifications on iPhone (default official service: api.day.app).",
+                "barkEnabled": "Enable Bark notifications",
+                "barkServerUrl": "Bark server URL",
+                "barkServerUrlHint": "If you don't self-host, use https://api.day.app",
+                "barkDeviceKey": "Bark Device Key",
+                "barkDeviceKeyHint": "Copy your device key from the Bark app.",
+                "barkTest": "Send Bark Test",
+                "barkTestSuccess": "Bark test message sent successfully!",
+                "barkTestFailed": "Bark test failed: {{error}}",
+                "barkGuideStep1Title": "Install Bark and get Device Key",
+                "barkGuideStep1Desc": "Install Bark on iPhone and copy your Device Key from the app.",
+                "barkGuideStep2Title": "Fill settings and enable",
+                "barkGuideStep2Desc": "Enable Bark above, keep server URL as https://api.day.app (default), paste Device Key, then save.",
+                "barkGuideStep3Title": "Send a test push",
+                "barkGuideStep3Desc": "Click \"Send Bark Test\". If your iPhone receives it, setup is complete."
             },
             "email": {
                 "title": "Email Notifications",
