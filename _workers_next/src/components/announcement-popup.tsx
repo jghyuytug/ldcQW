@@ -5,6 +5,7 @@ import { BellRing } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useI18n } from "@/lib/i18n/context"
+import ReactMarkdown from "react-markdown"
 
 const DISMISSED_SIGNATURE_KEY = "announcement-popup:dismissed-signature"
 
@@ -84,8 +85,10 @@ export function AnnouncementPopup({ popup }: { popup: AnnouncementPopupData }) {
                     </DialogHeader>
                 </div>
                 <div className="px-6 pb-6">
-                    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-sm leading-6 whitespace-pre-wrap text-foreground/90">
-                        {popup.content}
+                    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-sm leading-6 text-foreground/90">
+                        <div className="prose prose-sm max-w-none dark:prose-invert [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                            <ReactMarkdown>{popup.content}</ReactMarkdown>
+                        </div>
                     </div>
                     <DialogFooter className="mt-5">
                         <Button onClick={dismiss} className="min-w-28">

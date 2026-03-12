@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import ReactMarkdown from "react-markdown"
 import { StarRatingStatic } from "@/components/star-rating-static"
 import { NavigationPill } from "@/components/navigation-pill"
 import { CheckInButton } from "@/components/checkin-button"
@@ -148,9 +149,9 @@ export function HomeContent({
                                     <Sparkles className="h-3.5 w-3.5" />
                                     <span>{t("home.announcementLabel")}</span>
                                 </div>
-                                <p className="whitespace-pre-wrap text-sm leading-7 text-foreground/90">
-                                    {announcement?.banner}
-                                </p>
+                                <div className="prose prose-sm max-w-none text-foreground/90 dark:prose-invert [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                                    <ReactMarkdown>{announcement?.banner || ''}</ReactMarkdown>
+                                </div>
                             </div>
                         </div>
                     )}

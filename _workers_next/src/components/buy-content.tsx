@@ -535,8 +535,10 @@ export function BuyContent({
                                                                 {t('buy.warningTitle')}
                                                             </DialogTitle>
                                                         </DialogHeader>
-                                                        <div className="py-4 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-                                                            {displayProduct.purchaseWarning}
+                                                        <div className="py-4 text-sm leading-relaxed text-muted-foreground">
+                                                            <div className="prose prose-sm max-w-none dark:prose-invert [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                                                                <ReactMarkdown>{displayProduct.purchaseWarning || ''}</ReactMarkdown>
+                                                            </div>
                                                         </div>
                                                         <div className="flex justify-end gap-3">
                                                             <Button
